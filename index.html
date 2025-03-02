@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ishan's Personal Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0f0f0f;
+            color: #ffffff;
+            overflow-x: hidden;
+            background-image: url("Urban2/1.jpeg");
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 15, 15, 0.85);
+            z-index: -1;
+        }
+        
+        .header {
+            padding: 2rem;
+            text-align: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            transition: all 0.5s ease;
+        }
+        
+        .header.scrolled {
+            padding: 1rem;
+            background-color: rgba(15, 15, 15, 0.95);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-content {
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            transition: all 0.5s ease;
+        }
+        
+        .header.scrolled h1 {
+            font-size: 1.8rem;
+            letter-spacing: 3px;
+            transform: translateY(8px);
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.7;
+            transition: all 0.5s ease;
+        }
+        
+        .header.scrolled .subtitle {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        
+        .header-accent {
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.5s ease;
+        }
+        
+        .header.scrolled .header-accent {
+            width: 70%;
+        }
+        
+        .header-interactive {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .header.scrolled .header-interactive {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .header-dots {
+            position: absolute;
+            width: 100%;
+            height: 40px;
+            overflow: hidden;
+            bottom: -30px;
+            left: 0;
+        }
+        
+        .dot {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatUp 3s infinite ease-out;
+        }
+        
+        @keyframes floatUp {
+            0% {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.5;
+            }
+            80% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+        }
+        
+        .grid-gallery {
+            margin-top: 150px;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .project-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            aspect-ratio: 1/1;
+        }
+        
+        .project-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .project-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease, filter 0.5s ease;
+        }
+        
+        .project-card:hover .project-cover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+        
+        .project-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 60%, rgba(0, 0, 0, 0.8));
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        
+        .project-card:hover::after {
+            opacity: 1;
+        }
+        
+        .project-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            color: white;
+            z-index: 10;
+        }
+        
+        .project-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .project-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Album modal styles */
+        .album-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            display: none;
+            justify-content: flex-start;
+            align-items: flex-start;
+            flex-direction: column;
+            overflow-y: auto;
+            padding: 2rem 0;
+        }
+        
+        .modal-header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem 1rem 2rem;
+            position: fixed;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1010;
+        }
+        
+        .album-title {
+            font-size: 1.8rem;
+            margin-right: 1rem;
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .close-button:hover {
+            transform: rotate(90deg);
+        }
+        
+        .album-content {
+            margin-top: 5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1rem;
+            width: 90%;
+            max-width: 1400px;
+	    padding-bottom: 3rem;
+        }
+        
+        .album-photo {
+            width: 100%;
+            border-radius: 4px;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            margin-bottom: 1rem;
+        }
+        
+        .album-photo.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .album-photo img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+        
+        .album-photo:hover img {
+            transform: scale(1.02);
+        }
+        
+        .album-caption {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+        
+        /* Contact methods styles */
+        .contact-methods {
+            display: flex;
+            justify-content: center;
+            margin-top: 3rem;
+            gap: 2rem;
+            flex-wrap: wrap;
+            padding: 4rem 2rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .contact-method {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.9;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .contact-method:hover {
+            opacity: 1;
+            transform: translateY(-5px);
+        }
+        
+        .contact-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-text {
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            opacity: 0.7;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(to right, #4a9fff, #a855f7);
+            width: 0%;
+            z-index: 101;
+            transition: width 0.1s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .album-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <h1>ISHAN</h1>
+            <p class="subtitle">I’m Ishan Gautam, weaving stories through lenses and frames — a visual arts soul from NIFT Mumbai.</p>
+            <div class="header-accent"></div>
+            <div class="header-interactive">
+                <div class="header-dots"></div>
+            </div>
+        </div>
+    </header>
+
+    <section class="grid-gallery">
+        <div class="project-card" data-album="urban">
+            <img src="Urban/1.jpeg" alt="Urban Streetwear" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Urban Streetwear</h3>
+                <p class="project-desc">Moody editorial with a streetwear edge and experimental lighting.</p>
+            </div>	
+        </div>
+     
+        <div class="project-card" data-album="street">
+            <img src="Street/1.jpeg" alt="Streetwear Editorial" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Streetwear Editorial</h3>
+                <p class="project-desc">Avant-garde style of fashion photography with strong underground or streetwear influences.</p>
+            </div>
+        </div>
+        
+        <div class="project-card" data-album="lakme">
+            <img src="Lakme/2.jpg" alt="Valliyan Lakmé" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Valliyan Lakmé</h3>
+                <p class="project-desc">Retro-futuristic jewelry brand by Nitya Arora</p>
+            </div>
+        </div>
+        
+        <div class="project-card" data-album="boudoir">
+            <img src="Boudoir/5.jpg" alt="Boudoir Shoots" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Boudoir Shoots</h3>
+                <p class="project-desc">Exploring beauty in delicate fabrics</p>
+            </div>
+        </div>
+        
+        <div class="project-card" data-album="story">
+            <img src="Story/1.1.jpg" alt="From Clay to Canvas" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">From Clay to Canvas</h3>
+                <p class="project-desc">From hands to hues, art in every detail.</p>
+            </div>
+        </div>
+        
+        <div class="project-card" data-album="studio">
+            <img src="Studio/1.jpg" alt="Studio Chronicles" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Studio Chronicles</h3>
+                <p class="project-desc">Captured in the perfect light.</p>
+            </div>
+        </div>
+
+        <div class="project-card" data-album="portrait">
+            <img src="Portrait/1.jpg" alt="The Art of Expression" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">The Art of Expression</h3>
+                <p class="project-desc">Every face tells a unique story.</p>
+            </div>
+        </div>
+
+        <div class="project-card" data-album="studio2">
+            <img src="Studio2/1.jpeg" alt="Captured Essence" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Captured Essence</h3>
+                <p class="project-desc">Behind every shot is a story.</p>
+            </div>
+        </div>
+
+        <div class="project-card" data-album="portrait2">
+            <img src="Portrait2/1.jpeg" alt="Captured Personalities" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Captured Personalities</h3>
+                <p class="project-desc">A portrait is more than just an image.</p>
+            </div>
+        </div>
+        <div class="project-card" data-album="urban2">
+            <img src="Urban2/1.jpeg" alt="Urban Cool" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Urban Cool</h3>
+                <p class="project-desc">Edgy fashion portraiture blending mood, texture, and attitude.</p>
+            </div>	
+        </div>
+	<div class="project-card" data-album="portrait3">
+            <img src="Portrait3/1.jpeg" alt="Whispers of Gold" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Whispers of Gold</h3>
+                <p class="project-desc">A timeless dance of light, silk, and heritage captured in a single serene moment.</p>
+            </div>	
+        </div>
+	<div class="project-card" data-album="portrait4">
+            <img src="Portrait4/1.jpeg" alt="Portraits in Focus" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Portraits in Focus</h3>
+                <p class="project-desc">Timeless moments, frozen in a frame.</p>
+            </div>	
+        </div>
+	<div class="project-card" data-album="portrait5">
+            <img src="Portrait5/1.jpeg" alt="Feathered Freedom" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Feathered Freedom</h3>
+                <p class="project-desc">Wings cutting through the sea breeze.</p>
+            </div>	
+        </div>
+	<div class="project-card" data-album="portrait6">
+            <img src="Portrait6/1.jpeg" alt="Silhouettes & Skies" class="project-cover">
+            <div class="project-info">
+                <h3 class="project-title">Ocean Vows</h3>
+                <p class="project-desc">A bride, the breeze, and a love that lasts.</p>
+            </div>	
+        </div>
+        
+
+    </section>
+    
+    <!-- Album Modal -->
+    <div class="album-modal">
+        <div class="modal-header">
+            <h2 class="album-title">Project Album</h2>
+            <button class="close-button">&times;</button>
+        </div>
+        <div class="album-content"></div>
+    </div>
+
+    <!-- Contact Methods -->
+    <div class="contact-methods">
+        <div class="contact-method">
+            <div class="contact-icon">✉️</div>
+            <div class="contact-text">ishangautam41@gmail.com</div>
+        </div>
+        
+        <div class="contact-method">
+            <div class="contact-icon">📞</div>
+            <div class="contact-text">+91 79993 06922</div>
+        </div>
+        
+        <div class="contact-method">
+            <div class="contact-icon">📍</div>
+            <div class="contact-text"></div>
+            <div>
+            <a href="https://www.instagram.com/_ishanig_/" target="_blank">Instagram</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 ISHAN · All Rights Reserved</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('.header');
+            const progressBar = document.querySelector('.progress-bar');
+            const projectCards = document.querySelectorAll('.project-card');
+            const albumModal = document.querySelector('.album-modal');
+            const albumTitle = document.querySelector('.album-title');
+            const albumContent = document.querySelector('.album-content');
+            const closeButton = document.querySelector('.close-button');
+            const headerDots = document.querySelector('.header-dots');
+            
+            // Create animated dots for the header
+            function createDots() {
+                for (let i = 0; i < 15; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    dot.style.left = Math.random() * 100 + '%';
+                    dot.style.animationDelay = Math.random() * 3 + 's';
+                    headerDots.appendChild(dot);
+                }
+            }
+            
+            createDots();
+            
+            // Interactive header on scroll
+            function updateHeader() {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrollPercent = (scrollTop / scrollHeight) * 100;
+                
+                // Update progress bar
+                progressBar.style.width = scrollPercent + '%';
+                
+                // Add scrolled class after 50px
+                if (scrollTop > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                
+                // Parallax effect on header
+                header.style.transform = `translateY(${scrollTop * 0.1}px)`;
+                
+                // Interactive mouse movement
+                document.onmousemove = function(e) {
+                    if (header.classList.contains('scrolled')) {
+                        const mouseX = e.clientX / window.innerWidth - 0.5;
+                        const mouseY = e.clientY / window.innerHeight - 0.5;
+                        
+                        header.style.transform = `translateY(${scrollTop * 0.1}px) translateX(${mouseX * 10}px) rotateY(${mouseX * 5}deg)`;
+                    }
+                };
+            }
+            
+            // Album data (in a real application, this would come from a database)
+            const albums = {
+                'urban': {
+                    title: 'Experimental Conceptual Art',
+                    photos: [
+                        { src: 'Urban/1.jpeg', caption: '' },
+                        { src: 'Urban/2.jpeg', caption: '' },
+                        { src: 'Urban/3.jpeg', caption: '' },
+                        { src: 'Urban/4.jpeg', caption: '' },
+                        { src: 'Urban/5.jpeg', caption: '' },
+                        { src: 'Urban/6.jpeg', caption: '' },
+			{ src: 'Urban/7.jpeg', caption: '' },
+			{ src: 'Urban/8.jpeg', caption: '' },
+			{ src: 'Urban/9.jpeg', caption: '' },
+			{ src: 'Urban/10.jpeg', caption: '' },
+			{ src: 'Urban/11.jpeg', caption: '' }
+                    ]
+                },
+                'street': {
+                    title: 'Streetwear Editorial Series',
+                    photos: [
+                        { src: 'Street/1.jpeg', caption: '' },
+			{ src: 'Street/2.jpeg', caption: '' },
+			{ src: 'Street/3.jpeg', caption: '' },
+			{ src: 'Street/4.jpeg', caption: '' },
+                        { src: 'Street/5.jpeg', caption: '' },
+			{ src: 'Street/6.jpeg', caption: '' },
+			{ src: 'Street/7.jpeg', caption: '' },
+			{ src: 'Street/8.jpeg', caption: '' },
+                        { src: 'Street/9.jpeg', caption: '' },
+			{ src: 'Street/10.jpeg', caption: '' },
+			{ src: 'Street/11.jpeg', caption: '' },
+			{ src: 'Street/12.jpeg', caption: '' },
+			{ src: 'Street/13.jpeg', caption: '' },
+			{ src: 'Street/14.jpeg', caption: '' }                                                                        
+                    ]
+                },
+                'lakme': {
+                    title: 'Valliyan Lakmé Photo Week',
+                    photos: [
+                        { src: 'Lakme/1.jpg', caption: '' },
+                        { src: 'Lakme/2.jpg', caption: '' },
+                        { src: 'Lakme/3.jpg', caption: '' },
+                        { src: 'Lakme/4.jpg', caption: '' },
+                        { src: 'Lakme/5.jpg', caption: '' },
+                        { src: 'Lakme/6.jpg', caption: '' }
+
+                    ]
+                },
+                'boudoir': {
+                    title: 'Exploring beauty in delicate fabrics',
+                    photos: [
+                        { src: 'Boudoir/1.jpg', caption: '' },
+                        { src: 'Boudoir/2.jpg', caption: '' },
+                        { src: 'Boudoir/3.jpg', caption: '' },
+                        { src: 'Boudoir/4.jpg', caption: '' },
+                        { src: 'Boudoir/5.jpg', caption: '' },
+                        { src: 'Boudoir/6.jpg', caption: '' },
+                        { src: 'Boudoir/7.jpg', caption: '' },
+                        { src: 'Boudoir/8.jpg', caption: '' },
+                        { src: 'Boudoir/9.jpg', caption: '' },
+                        { src: 'Boudoir/10.jpg', caption: '' },
+                        { src: 'Boudoir/11.jpg', caption: '' }
+                    ]
+                },
+                'story': {
+                    title: 'Crafting beauty, one dye at a time',
+                    photos: [
+                        { src: 'Story/1.1.jpg', caption: '' },
+                        { src: 'Story/1.jpg', caption: '' },
+                        { src: 'Story/2.jpg', caption: '' },
+                        { src: 'Story/3.jpg', caption: '' },
+                        { src: 'Story/4.jpg', caption: '' },
+                        { src: 'Story/5.jpg', caption: '' },
+                        { src: 'Story/6.jpg', caption: '' },
+                        { src: 'Story/7.jpg', caption: '' },
+                        { src: 'Story/8.jpg', caption: '' },
+                        { src: 'Story/9.jpg', caption: '' },
+                        { src: 'Story/10.jpg', caption: '' },
+                        { src: 'Story/11.jpg', caption: '' },
+                        { src: 'Story/12.jpg', caption: '' },
+                        { src: 'Story/13.jpg', caption: '' },
+                        { src: 'Story/14.jpg', caption: '' },
+                        { src: 'Story/15.jpg', caption: '' },
+                    ]
+                },
+                'studio': {
+                    title: 'Studio magic, one shot at a time',
+                    photos: [
+                        { src: 'Studio/1.jpg', caption: '' },
+                        { src: 'Studio/2.jpeg', caption: '' },
+                        { src: 'Studio/3.jpeg', caption: '' },
+                        { src: 'Studio/4.jpeg', caption: '' },
+                        { src: 'Studio/5.jpeg', caption: '' },
+                        { src: 'Studio/6.jpeg', caption: '' },
+                        { src: 'Studio/7.jpeg', caption: '' },
+                        { src: 'Studio/8.jpeg', caption: '' },
+                        { src: 'Studio/9.jpeg', caption: '' },
+                        { src: 'Studio/10.jpeg', caption: '' },
+                        { src: 'Studio/11.jpeg', caption: '' },
+                        { src: 'Studio/12.jpeg', caption: '' },
+                        { src: 'Studio/13.jpeg', caption: '' },
+                        { src: 'Studio/14.jpeg', caption: '' },
+                        { src: 'Studio/15.jpeg', caption: '' },
+                        { src: 'Studio/16.jpeg', caption: '' },
+                        { src: 'Studio/17.jpeg', caption: '' }
+                    ]
+                },
+                'portrait': {
+                    title: 'Portraits that capture the heart',
+                    photos: [
+                        { src: 'Portrait/1.jpg', caption: '' },
+                        { src: 'Portrait/2.jpg', caption: '' },
+                        { src: 'Portrait/3.jpg', caption: '' },
+                        { src: 'Portrait/4.jpg', caption: '' },
+                        { src: 'Portrait/5.jpg', caption: '' },
+                        { src: 'Portrait/6.jpg', caption: '' },
+                        { src: 'Portrait/7.jpg', caption: '' },
+                        { src: 'Portrait/8.jpg', caption: '' },
+                        { src: 'Portrait/9.jpg', caption: '' }
+                    ]
+                },
+                'studio2': {
+                    title: 'Studio magic, one shot at a time',
+                    photos: [
+                        { src: 'Studio2/1.jpeg', caption: '' },
+                        { src: 'Studio2/2.jpeg', caption: '' },
+                        { src: 'Studio2/3.jpeg', caption: '' },
+                        { src: 'Studio2/4.jpeg', caption: '' },
+                        { src: 'Studio2/5.jpeg', caption: '' },
+                        { src: 'Studio2/6.jpeg', caption: '' },
+                        { src: 'Studio2/7.jpeg', caption: '' },
+                        { src: 'Studio2/8.jpeg', caption: '' },
+                        { src: 'Studio2/9.jpeg', caption: '' },
+                        { src: 'Studio2/10.jpeg', caption: '' }
+                    ]
+                },
+                'portrait2': {
+                    title: 'Portraits that capture the heart',
+                    photos: [
+                        { src: 'Portrait2/1.jpeg', caption: '' },
+                        { src: 'Portrait2/2.jpeg', caption: '' }
+                    ]
+                },
+		'urban2': {
+                    title: 'Moody/Atmospheric Portraiture',
+                    photos: [
+                        { src: 'Urban2/1.jpeg', caption: '' },
+                        { src: 'Urban2/2.jpeg', caption: '' },
+                        { src: 'Urban2/3.jpeg', caption: '' }
+                    ]
+                },
+                'portrait3': {
+                    title: 'Ethereal Cultural Portraiture',
+                    photos: [
+                        { src: 'Portrait3/1.jpeg', caption: '' },
+                        { src: 'Portrait3/2.jpeg', caption: '' },
+                        { src: 'Portrait3/3.jpeg', caption: '' },
+                        { src: 'Portrait3/4.jpeg', caption: '' },
+                        { src: 'Portrait3/5.jpeg', caption: '' },
+                        { src: 'Portrait3/6.jpeg', caption: '' }
+                    ]
+                },
+		'portrait4': {
+                    title: 'The beauty of controlled chaos',
+                    photos: [
+                        { src: 'Portrait4/1.jpeg', caption: '' },
+                        { src: 'Portrait4/2.jpeg', caption: '' },
+                        { src: 'Portrait4/3.jpeg', caption: '' },
+                        { src: 'Portrait4/4.jpeg', caption: '' }
+                    ]
+                },
+		'portrait5': {
+                    title: 'Where sky, sea, and soul collide',
+                    photos: [
+                        { src: 'Portrait5/1.jpeg', caption: '' },
+                        { src: 'Portrait5/2.jpeg', caption: '' }
+                    ]
+                },
+		'portrait6': {
+                    title: 'Where love flows as freely as the sea',
+                    photos: [
+                        { src: 'Portrait6/1.jpeg', caption: '' },
+                        { src: 'Portrait6/2.jpeg', caption: '' },
+                        { src: 'Portrait6/3.jpeg', caption: '' }
+                    ]
+                },
+            };
+            
+            // Function to check if element is in viewport
+            function isInViewport(element) {
+                const rect = element.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85
+                );
+            }
+            
+            // Function to handle scroll animation for gallery
+            function handleScroll() {
+           	// Update header effects
+          	updateHeader();
+    
+    		// Animate project cards
+    		projectCards.forEach(card => {
+        		if (isInViewport(card)) {
+            			card.classList.add('visible');
+        		}
+    		});
+    
+    		// Animate album photos if modal is open
+    		if (albumModal.style.display === 'flex') {
+      		  const albumPhotos = document.querySelectorAll('.album-photo');
+        	  albumPhotos.forEach(photo => {
+            		// Make all photos visible when modal is open
+           		photo.classList.add('visible');
+        	  });
+    		}
+	      }
+            
+            // Open album modal
+            // Open album modal
+	    projectCards.forEach(card => {
+            	card.addEventListener('click', function() {
+        		const albumId = this.getAttribute('data-album');
+        		const album = albums[albumId];
+        
+        		if (album) {
+            		   albumTitle.textContent = album.title;
+            		   albumContent.innerHTML = '';
+            
+            		   album.photos.forEach(photo => {
+                		const photoElement = document.createElement('div');
+                		photoElement.className = 'album-photo';
+                
+                	   photoElement.innerHTML = `
+                    		<img src="${photo.src}" alt="${photo.caption}" title="Click to open in full size">
+                    		<div class="album-caption">${photo.caption}</div>
+                           `;
+                
+                	   // Add click event to open image in new tab
+                	   const imgElement = photoElement.querySelector('img');
+                	   imgElement.style.cursor = 'pointer'; // Change cursor to pointer to indicate clickability
+                	   imgElement.addEventListener('click', function(e) {
+                    		e.stopPropagation(); // Prevent the click from closing the modal
+                    		window.open(this.src, '_blank'); // Open image in new tab
+                 	   });
+                
+                	   albumContent.appendChild(photoElement);
+              		   });
+            
+            		   albumModal.style.display = 'flex';
+            	 	   document.body.style.overflow = 'hidden';
+            
+            		   // Trigger the scroll handler to animate the photos
+            		   setTimeout(handleScroll, 100);
+        		}
+    		});
+	    });
+            
+            // Close album modal
+            closeButton.addEventListener('click', function() {
+                albumModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Close modal when clicking outside content
+            albumModal.addEventListener('click', function(event) {
+                if (event.target === albumModal) {
+                    albumModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Add interactive 3D hover effect to header
+            const headerContent = document.querySelector('.header-content');
+            headerContent.addEventListener('mousemove', function(e) {
+                if (!header.classList.contains('scrolled')) {
+                    const rect = this.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const deltaX = (x - centerX) / centerX;
+                    const deltaY = (y - centerY) / centerY;
+                    
+                    this.style.transform = `perspective(1000px) rotateX(${deltaY * 5}deg) rotateY(${-deltaX * 5}deg)`;
+                }
+            });
+	    
+		
+            headerContent.addEventListener('mouseleave', function() {
+                this.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+            });
+	  
+            // Initial check on load
+            handleScroll();
+            
+            // Check on scroll
+            window.addEventListener('scroll', handleScroll);
+        });
+    </script>
+</body>
+</html>
