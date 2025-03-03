@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ishan's Personal Portfolio</title>
+    <link rel="icon" href="icon.png">
     <style>
         * {
             margin: 0;
@@ -33,6 +34,16 @@
             background-color: rgba(15, 15, 15, 0.85);
             z-index: -1;
         }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
         
         .header {
             padding: 2rem;
@@ -46,9 +57,6 @@
         
         .header.scrolled {
             padding: 1rem;
-            background-color: rgba(15, 15, 15, 0.95);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
         }
         
         .header-content {
@@ -183,8 +191,8 @@
         }
         
         .project-card:hover .project-cover {
-            transform: scale(1.05);
-            filter: brightness(1.1);
+            transform: scale(1.3);
+            filter: brightness(1.5);
         }
         
         .project-card::after {
@@ -304,7 +312,7 @@
         }
         
         .album-photo:hover img {
-            transform: scale(1.02);
+            transform: scale(1.3);
         }
         
         .album-caption {
@@ -374,9 +382,11 @@
                 grid-template-columns: 1fr;
             }
         }
+
     </style>
 </head>
 <body>
+    <canvas id="particle-canvas"></canvas>
     <div class="progress-bar"></div>
     
     <header class="header">
@@ -560,31 +570,35 @@
             createDots();
             
             // Interactive header on scroll
+            // Replace your updateHeader() function with this:
             function updateHeader() {
                 const scrollTop = window.scrollY || document.documentElement.scrollTop;
-                const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                const scrollPercent = (scrollTop / scrollHeight) * 100;
-                
-                // Update progress bar
+                // Only progress until 50% of the page height
+                const maxScrollForEffect = document.documentElement.clientHeight;
+                const scrollPercent = Math.min((scrollTop / maxScrollForEffect) * 100, 100);
+    
+            // Update progress bar
                 progressBar.style.width = scrollPercent + '%';
-                
-                // Add scrolled class after 50px
+    
+             // Add scrolled class after 50px
                 if (scrollTop > 50) {
                     header.classList.add('scrolled');
                 } else {
                     header.classList.remove('scrolled');
                 }
-                
-                // Parallax effect on header
-                header.style.transform = `translateY(${scrollTop * 0.1}px)`;
-                
-                // Interactive mouse movement
+    
+            // Parallax effect on header - only apply for the first portion of the page
+                if (scrollTop <= maxScrollForEffect) {
+                    header.style.transform = `translateY(${scrollTop * 0.1}px)`;
+                }
+    
+            // Interactive mouse movement
                 document.onmousemove = function(e) {
                     if (header.classList.contains('scrolled')) {
                         const mouseX = e.clientX / window.innerWidth - 0.5;
                         const mouseY = e.clientY / window.innerHeight - 0.5;
-                        
-                        header.style.transform = `translateY(${scrollTop * 0.1}px) translateX(${mouseX * 10}px) rotateY(${mouseX * 5}deg)`;
+            
+                        header.style.transform = `translateY(${Math.min(scrollTop, maxScrollForEffect) * 0.1}px) translateX(${mouseX * 10}px) rotateY(${mouseX * 5}deg)`;
                     }
                 };
             }
@@ -600,30 +614,30 @@
                         { src: 'Urban/4.jpeg', caption: '' },
                         { src: 'Urban/5.jpeg', caption: '' },
                         { src: 'Urban/6.jpeg', caption: '' },
-			{ src: 'Urban/7.jpeg', caption: '' },
-			{ src: 'Urban/8.jpeg', caption: '' },
-			{ src: 'Urban/9.jpeg', caption: '' },
-			{ src: 'Urban/10.jpeg', caption: '' },
-			{ src: 'Urban/11.jpeg', caption: '' }
+			            { src: 'Urban/7.jpeg', caption: '' },
+			            { src: 'Urban/8.jpeg', caption: '' },
+			            { src: 'Urban/9.jpeg', caption: '' },
+			            { src: 'Urban/10.jpeg', caption: '' },
+			            { src: 'Urban/11.jpeg', caption: '' }
                     ]
                 },
                 'street': {
                     title: 'Streetwear Editorial Series',
                     photos: [
                         { src: 'Street/1.jpeg', caption: '' },
-			{ src: 'Street/2.jpeg', caption: '' },
-			{ src: 'Street/3.jpeg', caption: '' },
-			{ src: 'Street/4.jpeg', caption: '' },
+			            { src: 'Street/2.jpeg', caption: '' },
+			            { src: 'Street/3.jpeg', caption: '' },
+			            { src: 'Street/4.jpeg', caption: '' },
                         { src: 'Street/5.jpeg', caption: '' },
-			{ src: 'Street/6.jpeg', caption: '' },
-			{ src: 'Street/7.jpeg', caption: '' },
-			{ src: 'Street/8.jpeg', caption: '' },
+			            { src: 'Street/6.jpeg', caption: '' },
+			            { src: 'Street/7.jpeg', caption: '' },
+			            { src: 'Street/8.jpeg', caption: '' },
                         { src: 'Street/9.jpeg', caption: '' },
-			{ src: 'Street/10.jpeg', caption: '' },
-			{ src: 'Street/11.jpeg', caption: '' },
-			{ src: 'Street/12.jpeg', caption: '' },
-			{ src: 'Street/13.jpeg', caption: '' },
-			{ src: 'Street/14.jpeg', caption: '' }                                                                        
+			            { src: 'Street/10.jpeg', caption: '' },
+			            { src: 'Street/11.jpeg', caption: '' },
+			            { src: 'Street/12.jpeg', caption: '' },
+			            { src: 'Street/13.jpeg', caption: '' },
+			            { src: 'Street/14.jpeg', caption: '' }                                                                        
                     ]
                 },
                 'lakme': {
@@ -892,6 +906,97 @@
             // Check on scroll
             window.addEventListener('scroll', handleScroll);
         });
+        // Particle effect
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            }
+
+        function Particle(x, y) {
+            this.x = x;
+            this.y = y;
+            this.size = Math.random() * 3 + 1;
+            this.speedX = Math.random() * 2 - 1;
+            this.speedY = Math.random() * 2 - 1;
+            this.opacity = Math.random() * 0.5 + 0.1;
+            }
+
+        Particle.prototype.update = function() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+    
+        if (this.size > 0.2) this.size -= 0.01;
+    
+        // Bounce off edges
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        };
+
+        Particle.prototype.draw = function() {
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+        };
+
+        function createParticles() {
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                particles.push(new Particle(x, y));
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+        
+        // Create connections between particles
+        for (let j = i; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 100) {
+                ctx.beginPath();
+                ctx.strokeStyle = `rgba(1, 0, 3, ${0.1 * (1 - distance/100)})`;
+                ctx.lineWidth = 0.5;
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+            }
+        }
+        
+        // Remove particles that are too small
+        if (particles[i].size <= 0.2) {
+            particles.splice(i, 1);
+            i--;
+        }
+    }
+    
+    // Add new particles occasionally
+    if (Math.random() > 0.95 && particles.length < 150) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        particles.push(new Particle(x, y));
+    }
+    
+    requestAnimationFrame(animateParticles);
+}
+
+// Initialize particles
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+createParticles();
+animateParticles();
     </script>
 </body>
 </html>
